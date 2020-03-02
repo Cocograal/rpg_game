@@ -6,12 +6,12 @@ public class Bow extends Weapon {
     public Bow() {
         this.weaponName = "Bow";
         price = 500;
-        attack = 30;
+        attack = 10;
         defense = 10;
         accuracy = 20;
     }
     @Override
-    protected void weaponFeature() {
+    public void weaponFeature() {
 
 
     }

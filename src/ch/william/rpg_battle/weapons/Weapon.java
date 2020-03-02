@@ -1,8 +1,8 @@
 package ch.william.rpg_battle.weapons;
 
 public abstract class Weapon {
-    public int attack, defense, accuracy, speed, price;
-    abstract void weaponFeature();
+    protected int attack, defense, accuracy, speed, price;
+    public abstract void weaponFeature();
 
     public int getAttack() {
         return attack;

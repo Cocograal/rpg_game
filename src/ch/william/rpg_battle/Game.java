@@ -1,69 +1,82 @@
 package ch.william.rpg_battle;
 
-import ch.william.rpg_battle.players.ComputerPlayer;
+import ch.william.rpg_battle.players.AIPlayer;
 import ch.william.rpg_battle.players.Player;
-import ch.william.rpg_battle.players.RealPlayer;
+import ch.william.rpg_battle.players.UserPlayer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Game {
-    ComputerPlayer computerPlayer;
-    RealPlayer realPlayer;
+    private AIPlayer aiPlayer;
+    private UserPlayer userPlayer;
 
-    boolean continueGame;
+    private boolean continueGame;
+    private Scanner sc;
+    private Random rdm;
 
-    public Game(RealPlayer realPlayer, ComputerPlayer computerPlayer) {
-        this.realPlayer = realPlayer;
-        this.computerPlayer = computerPlayer;
+
+    public Game(UserPlayer userPlayer, AIPlayer aiPlayer) {
+        this.userPlayer = userPlayer;
+        this.aiPlayer = aiPlayer;
+        continueGame = true;
+        rdm = new Random();
+        sc = new Scanner(System.in);
+
     }
 
     protected void start() {
-        Scanner sc = new Scanner(System.in);
-        Random rdm = new Random();
         String choice, computerChoice;
-        String[] computerChoices = {"attack", "provoke"};
-        continueGame = true;
+        // String[] computerChoices = {"attack", "provoke"};
+        String[] computerChoices = {"provoke"};
+
         do {
+            System.out.println("Player health: " + userPlayer.getHealth() + ", computer health: " + aiPlayer.getHealth());
             computerChoice = computerChoices[rdm.nextInt(computerChoices.length)];
 
             System.out.print("Choose between attack, provoke, flee >>>");
             choice = sc.nextLine();
 
             if (firstToPlay()) {
-                applyChoice(choice, computerPlayer);
-                applyChoice(computerChoice, realPlayer);
+                applyChoice(choice, aiPlayer, userPlayer);
+                applyChoice(computerChoice, userPlayer, aiPlayer);
             } else {
-                applyChoice(computerChoice, realPlayer);
-                applyChoice(choice, computerPlayer);
+                applyChoice(computerChoice, userPlayer, aiPlayer);
+                applyChoice(choice, aiPlayer, userPlayer);
             }
 
-            System.out.println("Player health: " + realPlayer.getHealth() + ", computer health: " + computerPlayer.getHealth());
-        } while (realPlayer.getHealth() > 0 && computerPlayer.getHealth() > 0);
+
+        } while (userPlayer.isAlive() && aiPlayer.isAlive() && continueGame);
 
     }
 
     private boolean firstToPlay() {
-        if (realPlayer.getSpeed() > computerPlayer.getSpeed())
+        if (userPlayer.getSpeed() > aiPlayer.getSpeed())
             return true;
-        else if (realPlayer.getSpeed() == computerPlayer.getSpeed()) {
-            Random rdm = new Random();
+        else if (userPlayer.getSpeed() == aiPlayer.getSpeed()) {
             if (rdm.nextInt(2) == 1)
                 return true;
         }
         return false;
     }
 
-    private void applyChoice(String choice, Player character) {
-        if (character.getHealth() > 0) {
+    private void applyChoice(String choice, Player opponent, Player actualPlayer) {
+        if (actualPlayer.isAlive()) {
+            boolean hasHit = actualPlayer.hasHitTheTarget();
             switch (choice) {
                 case "attack":
-                    System.out.println("You attacked");
-                    character.setHealth(-(character.getAttack()));
+                    if (hasHit) {
+                        System.out.println("You attacked");
+                        opponent.damage(actualPlayer.getAttack());
+                    } else {
+                        System.out.println("You missed");
+                    }
                     break;
                 case "provoke":
                     System.out.println("You provoked the ennemy");
-                    character.setAccuracy(-5);
+                    opponent.changeStats("accuracy", -5);
                     break;
                 case "flee":
                     System.out.println("You fled");
