@@ -35,6 +35,14 @@ public class Player {
         }
     }
 
+    public void resetStats() {
+        attack = 5 + 3*level + weapon.getAttack();
+        defense = 5 + 3*level + weapon.getDefense();
+        accuracy = 30 + 3*level + weapon.getAccuracy();
+        speed = 10 + 3*level + weapon.getSpeed();
+        health = 50 + 3*level;
+    }
+
     public void damage(int damage) {
         System.out.println(damage);
         health -= damage;
@@ -72,4 +80,7 @@ public class Player {
         return speed;
     }
 
+    public int getLevel() {
+        return level;
+    }
 }
